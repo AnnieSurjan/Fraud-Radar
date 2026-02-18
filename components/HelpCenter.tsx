@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, MessageCircle, FileQuestion, Bug, Lightbulb, Send, HelpCircle, ChevronDown, ChevronUp, Bot, Loader2, CheckCircle } from 'lucide-react';
+import { X, MessageCircle, FileQuestion, Bug, Lightbulb, Send, HelpCircle, ChevronDown, ChevronUp, Bot, Loader2, CheckCircle, MessageSquare, AlertCircle } from 'lucide-react';
 import { sendMessageToGemini } from '../services/geminiService';
 import { ChatMessage } from '../types';
 
@@ -46,8 +46,8 @@ const HelpCenter: React.FC<HelpCenterProps> = ({ isOpen, onClose }) => {
                 <span>Radar AI Support</span>
             </button>
             <button onClick={() => setActiveTab('feedback')} className={`flex-1 py-4 text-sm font-medium flex items-center justify-center space-x-2 transition-colors border-b-2 ${activeTab === 'feedback' ? 'border-red-600 text-red-600 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-                <MessageCircle size={18}/>
-                <span>Feedback</span>
+                <MessageSquare size={18}/>
+                <span>Customer Support</span>
             </button>
         </div>
 
@@ -135,16 +135,101 @@ const AiSupportTab = () => {
 
 const FeedbackTab = ({ onClose }: { onClose: () => void }) => {
     const [sent, setSent] = useState(false);
+    const [category, setCategory] = useState<FeedbackType>('General Feedback');
+    const [message, setMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setSent(true);
-        setTimeout(() => onClose(), 2000);
+        setIsSubmitting(true);
+        // Simulate API call
+        setTimeout(() => {
+            setIsSubmitting(false);
+            setSent(true);
+            setTimeout(() => onClose(), 2500);
+        }, 1200);
     };
-    if (sent) return <div className="h-full flex items-center justify-center">Feedback sent to Fraud Radar team!</div>;
+
+    if (sent) return (
+        <div className="h-full flex flex-col items-center justify-center animate-in zoom-in duration-300">
+            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                <CheckCircle size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Message Received</h3>
+            <p className="text-slate-600 mt-2 text-sm max-w-xs text-center">
+                Your {category.toLowerCase()} has been sent to our support team. We'll get back to you shortly.
+            </p>
+        </div>
+    );
+
     return (
-        <form onSubmit={handleSubmit} className="space-y-5">
-            <textarea required rows={6} placeholder="How can we improve Fraud Radar for you?" className="w-full bg-slate-50 border border-slate-200 p-4 rounded-lg outline-none"></textarea>
-            <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-lg shadow-lg">Submit Feedback</button>
+        <form onSubmit={handleSubmit} className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-4">
+                <h3 className="text-lg font-bold text-slate-800">Send us a message</h3>
+                <p className="text-sm text-slate-500">How can we help you today? Please select a category and describe your issue.</p>
+            </div>
+
+            <div className="space-y-2">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Message Category</label>
+                <div className="relative">
+                    <select 
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value as FeedbackType)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-red-500 transition-all cursor-pointer appearance-none"
+                        required
+                    >
+                        <option value="Question">Question</option>
+                        <option value="Feature Request">Feature Request</option>
+                        <option value="General Feedback">General Feedback</option>
+                        <option value="Bug Report">Bug Report</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                        <ChevronDown size={18} />
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                <textarea 
+                    required 
+                    rows={6} 
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={
+                        category === 'Bug Report' ? "Please describe the issue and steps to reproduce..." :
+                        category === 'Feature Request' ? "What would you like to see in Fraud Radar?" :
+                        category === 'Question' ? "What is your question about our services?" :
+                        "How can we improve Fraud Radar for you?"
+                    }
+                    className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:ring-2 focus:ring-red-500 text-sm transition-all resize-none"
+                ></textarea>
+            </div>
+
+            <button 
+                type="submit" 
+                disabled={isSubmitting || !message.trim()}
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 active:scale-[0.98] uppercase tracking-widest text-sm"
+            >
+                {isSubmitting ? (
+                    <>
+                        <Loader2 size={18} className="animate-spin" />
+                        <span>Sending Message...</span>
+                    </>
+                ) : (
+                    <>
+                        <Send size={18}/>
+                        <span>Send {category}</span>
+                    </>
+                )}
+            </button>
+
+            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <AlertCircle size={14} className="text-blue-600 shrink-0" />
+                <p className="text-[11px] text-blue-700 leading-tight">
+                    Standard response time is under 12 hours for Professional and Enterprise users.
+                </p>
+            </div>
         </form>
     );
 };

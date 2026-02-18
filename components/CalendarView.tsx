@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ScanResult } from '../types';
-import { CheckCircle, XCircle, FileText, X, AlertTriangle, CheckSquare, Download, Mail, Lock } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, X, AlertTriangle, CheckSquare, Download, Mail } from 'lucide-react';
 
 interface CalendarViewProps {
   history: ScanResult[];
@@ -11,6 +11,14 @@ interface CalendarViewProps {
 
 const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, isTrial }) => {
   const [selectedScan, setSelectedScan] = useState<ScanResult | null>(null);
+
+  const formatToUSADate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const [year, month, day] = parts;
+    return `${month}/${day}/${year}`;
+  };
 
   const getMockDetails = (scan: ScanResult) => {
       if (scan.anomaliesFound === 0) return [];
@@ -23,13 +31,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
       }));
   };
 
-  const handlePremiumAction = (e: React.MouseEvent) => {
+  const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isTrial && onUpgradePrompt) {
-      onUpgradePrompt();
-    } else {
-      alert("Generating report for download...");
-    }
+    alert("Generating forensic PDF report for download...");
+  };
+
+  const handleResend = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    alert(`Report for ${id} has been resent to your finance team.`);
   };
 
   return (
@@ -37,12 +46,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-slate-800">Scan History</h2>
         <button 
-          onClick={handlePremiumAction}
-          className="bg-white border border-slate-200 shadow-sm px-4 py-2 rounded-lg text-blue-600 hover:text-blue-800 text-sm font-bold flex items-center transition-all active:scale-95"
+          onClick={handleDownload}
+          className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center transition-all active:scale-95 shadow-md"
         >
-          {isTrial && <Lock size={14} className="mr-2 text-slate-400"/>}
           <Download size={16} className="mr-2"/>
-          Download Report (PDF)
+          Download History Report
         </button>
       </div>
 
@@ -51,9 +59,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="px-6 py-4 font-semibold text-slate-700">Scan ID</th>
-              <th className="px-6 py-4 font-semibold text-slate-700">Date</th>
+              <th className="px-6 py-4 font-semibold text-slate-700">Date (MM/DD/YYYY)</th>
               <th className="px-6 py-4 font-semibold text-slate-700">Status</th>
-              <th className="px-6 py-4 font-semibold text-slate-700 text-right">Duplicates Found</th>
+              <th className="px-6 py-4 font-semibold text-slate-700 text-right">Anomalies Found</th>
               <th className="px-6 py-4 font-semibold text-slate-700 text-right">Actions</th>
             </tr>
           </thead>
@@ -65,7 +73,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                 onClick={() => setSelectedScan(scan)}
               >
                 <td className="px-6 py-4 text-slate-600 font-mono text-sm group-hover:text-blue-600 font-medium">{scan.id}</td>
-                <td className="px-6 py-4 text-slate-800">{scan.date}</td>
+                <td className="px-6 py-4 text-slate-800 font-medium">{formatToUSADate(scan.date)}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center space-x-2">
                     {scan.status === 'Completed' ? (
@@ -73,27 +81,19 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                     ) : (
                       <XCircle size={16} className="text-red-500" />
                     )}
-                    <span className={`text-sm ${scan.status === 'Completed' ? 'text-green-700' : 'text-red-700'}`}>
+                    <span className={`text-sm font-bold ${scan.status === 'Completed' ? 'text-green-700' : 'text-red-700'}`}>
                       {scan.status}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-medium text-slate-800">
+                <td className="px-6 py-4 text-right font-black text-slate-800">
                   {scan.anomaliesFound}
                 </td>
                  <td className="px-6 py-4 text-right">
                     <button 
-                        onClick={(e) => { 
-                          e.stopPropagation();
-                          if (isTrial && onUpgradePrompt) {
-                            onUpgradePrompt();
-                          } else {
-                            alert(`Resending report for ${scan.id}`); 
-                          }
-                        }} 
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center justify-end gap-1 hover:underline"
+                        onClick={(e) => handleResend(e, scan.id)} 
+                        className="text-blue-600 hover:text-blue-800 text-sm font-black uppercase tracking-widest flex items-center justify-end gap-1 hover:underline"
                     >
-                        {isTrial && <Lock size={12} className="text-slate-400"/>}
                         <Mail size={14} className="mr-1"/> Resend Email
                     </button>
                 </td>
@@ -112,7 +112,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                               <FileText size={20} className="mr-2 text-slate-500"/>
                               Scan Details: {selectedScan.id}
                           </h3>
-                          <p className="text-sm text-slate-500">Executed on {selectedScan.date}</p>
+                          <p className="text-sm text-slate-500">Executed on {formatToUSADate(selectedScan.date)}</p>
                       </div>
                       <button onClick={() => setSelectedScan(null)} className="text-slate-400 hover:text-slate-600 p-1 transition-transform active:scale-90">
                           <X size={24}/>
@@ -128,17 +128,17 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                                 </div>
                             </div>
                             <div className="flex-1 bg-white border border-slate-200 p-4 rounded-lg text-center">
-                                <div className="text-sm text-slate-500 uppercase font-bold tracking-wide mb-1 text-xs">Found</div>
-                                <div className="text-2xl font-bold text-slate-800">{selectedScan.anomaliesFound}</div>
+                                <div className="text-sm text-slate-500 uppercase font-bold tracking-wide mb-1 text-xs">Exposure</div>
+                                <div className="text-2xl font-bold text-slate-800">${selectedScan.totalRiskExposure.toLocaleString()}</div>
                             </div>
                         </div>
 
-                        <h4 className="font-bold text-slate-800 mb-3 text-sm border-b border-slate-100 pb-2">Resolution History</h4>
+                        <h4 className="font-bold text-slate-800 mb-3 text-sm border-b border-slate-100 pb-2 uppercase tracking-widest">Resolution History</h4>
                         
                         {selectedScan.anomaliesFound === 0 ? (
                             <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-lg">
                                 <CheckCircle size={32} className="mx-auto text-green-400 mb-2"/>
-                                No duplicates were found during this scan.
+                                No anomalies were found during this scan.
                             </div>
                         ) : (
                             <div className="space-y-3">
@@ -154,7 +154,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                                             </div>
                                             <p className="text-sm text-slate-600">{item.description}</p>
                                             <div className="mt-1 text-xs font-medium text-slate-500">
-                                                Action: <span className={item.status.includes('Resolved') ? 'text-green-600' : 'text-slate-600'}>{item.status}</span>
+                                                Action Taken: <span className={item.status.includes('Resolved') ? 'text-green-600' : 'text-slate-600'}>{item.status}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +164,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ history, onUpgradePrompt, i
                   </div>
 
                   <div className="p-4 border-t border-slate-100 flex justify-end">
-                      <button onClick={() => setSelectedScan(null)} className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all active:scale-95 shadow-md">Close</button>
+                      <button onClick={() => setSelectedScan(null)} className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all active:scale-95 shadow-md uppercase tracking-widest text-xs">Close Details</button>
                   </div>
               </div>
           </div>
