@@ -9,18 +9,19 @@ import ChatAssistant from './components/ChatAssistant';
 import HelpCenter from './components/HelpCenter';
 import Auth from './components/Auth';
 import LandingPage from './components/LandingPage';
+import LegalPage from './components/LegalPage';
 import PaymentGateway from './components/PaymentGateway';
 import { UserProfile as IUserProfile, UserRole, ScanResult, AuditLogEntry, AnomalyGroup, AppNotification } from './types';
 import { MOCK_SCAN_HISTORY } from './services/mockData';
 
-type ViewState = 'landing' | 'auth' | 'app';
+type ViewState = 'landing' | 'auth' | 'app' | 'terms' | 'privacy' | 'refund';
 
 const DEFAULT_USER: IUserProfile = {
     name: 'Alex Accountant',
     email: 'alex@finance-pro.com',
-    role: UserRole.MANAGER, 
-    plan: 'Professional', 
-    companyName: 'Finance Pro Ltd.', 
+    role: UserRole.MANAGER,
+    plan: 'Professional',
+    companyName: 'Finance Pro Ltd.',
     isQuickBooksConnected: true,
     isXeroConnected: false,
     isTrial: false,
@@ -70,7 +71,7 @@ const App: React.FC = () => {
     setCurrentView('app');
     handleAddAuditLog('Login', 'User logged in with Full Professional Access', 'info');
   };
-  
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     setCurrentView('landing');
@@ -128,13 +129,18 @@ const App: React.FC = () => {
   };
 
   const renderCurrentView = () => {
+      if (currentView === 'terms' || currentView === 'privacy' || currentView === 'refund') {
+          return <LegalPage page={currentView} onBack={() => setCurrentView('landing')} onNavigate={(p) => setCurrentView(p)} />;
+      }
+
       if (currentView === 'landing') {
           return (
-            <LandingPage 
-                onGetStarted={() => setCurrentView('auth')} 
-                onLogin={() => setCurrentView('auth')} 
-                onUpgrade={handleUpgradeClick} 
-                onStartDemo={() => handleLogin()} 
+            <LandingPage
+                onGetStarted={() => setCurrentView('auth')}
+                onLogin={() => setCurrentView('auth')}
+                onUpgrade={handleUpgradeClick}
+                onStartDemo={() => handleLogin()}
+                onOpenLegal={(p) => setCurrentView(p)}
             />
           );
       }
@@ -144,9 +150,9 @@ const App: React.FC = () => {
       }
 
       return (
-        <Layout 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
+        <Layout
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
             user={user}
             onLogout={handleLogout}
             notifications={notifications}
@@ -194,15 +200,15 @@ const App: React.FC = () => {
                 </div>
             )}
             {activeTab === 'profile' && (
-                <UserProfile 
-                    user={user} 
-                    isConnectingQB={isConnectingQB} 
-                    isConnectingXero={isConnectingXero} 
+                <UserProfile
+                    user={user}
+                    isConnectingQB={isConnectingQB}
+                    isConnectingXero={isConnectingXero}
                     onConnectQuickBooks={handleConnectQB}
                     onConnectXero={handleConnectXero}
-                    onUpdateUser={setUser} 
-                    onUpgradePrompt={() => handleUpgradeClick('Professional', '69')} 
-                    onExportAudit={handleExport} 
+                    onUpdateUser={setUser}
+                    onUpgradePrompt={() => handleUpgradeClick('Professional', '69')}
+                    onExportAudit={handleExport}
                 />
             )}
         </Layout>
