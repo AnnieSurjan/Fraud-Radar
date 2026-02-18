@@ -1,0 +1,17 @@
+
+{
+  "name": "Fraud Radar: AI Anomaly Detector",
+  "short_name": "Fraud Radar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563EB",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6a8.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    }
+  ]
+}
