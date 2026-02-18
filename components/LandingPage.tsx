@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle, TrendingUp, Shield, Clock, Database, PlayCircle, Star, Zap, Info, Lock, ChevronLeft, FileText, Scale, HelpCircle, CreditCard, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, CheckCircle, Shield, Clock, Zap, Lock, FileText, Scale, Info, CreditCard, RotateCcw } from 'lucide-react';
 import Logo from './Logo';
 import HelpCenter from './HelpCenter';
 
@@ -9,47 +9,11 @@ interface LandingPageProps {
   onLogin: () => void;
   onUpgrade: (plan: string, price: string) => void;
   onStartDemo: () => void;
-  initialLegalTab?: 'terms' | 'privacy' | 'refund' | null;
+  onOpenLegal: (page: 'terms' | 'privacy' | 'refund') => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgrade, onStartDemo, initialLegalTab }) => {
-  const [activeLegalView, setActiveLegalView] = useState<'terms' | 'privacy' | 'refund' | null>(null);
+const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgrade, onStartDemo, onOpenLegal }) => {
   const [showHelp, setShowHelp] = useState(false);
-
-  useEffect(() => {
-    if (initialLegalTab) {
-      setActiveLegalView(initialLegalTab);
-    }
-  }, [initialLegalTab]);
-
-  if (activeLegalView) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
-        <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-          <div className="max-w-7xl auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <Logo variant="light" />
-            <button 
-              onClick={() => setActiveLegalView(null)}
-              className="flex items-center text-slate-300 hover:text-white transition-colors gap-2 font-bold group"
-            >
-              <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform"/> Back to Home
-            </button>
-          </div>
-        </nav>
-        <div className="max-w-4xl mx-auto py-20 px-6">
-           <LegalContent activeTab={activeLegalView} />
-        </div>
-        <footer className="bg-slate-50 border-t border-slate-200 py-12 text-center">
-            <button 
-                onClick={() => setActiveLegalView(null)}
-                className="px-10 py-4 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-sm hover:bg-slate-800 transition-all shadow-xl active:scale-95"
-            >
-                Return to Landing Page
-            </button>
-        </footer>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
@@ -69,23 +33,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgr
       <div className="relative overflow-hidden bg-slate-900 pt-20 pb-24 lg:pt-32 lg:pb-40">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center z-10">
-          
-          <button 
+
+          <button
             onClick={() => onUpgrade('Starter', '29')}
             className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600/10 border border-red-500/20 text-red-400 text-sm font-bold uppercase tracking-wider animate-pulse hover:bg-red-600/20 hover:border-red-500/40 transition-all cursor-pointer group"
           >
             <Clock size={16} className="group-hover:scale-110 transition-transform" /> 7-Day Free Detection Trial Available
           </button>
-          
+
           <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-8 leading-tight">
             Advanced Financial <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400">Security for SMEs.</span>
           </h1>
-          
+
           <p className="max-w-3xl text-xl text-slate-400 mb-10 leading-relaxed">
             Fraud Radar is an AI-powered financial surveillance tool designed for businesses to identify suspicious patterns and potential fraud within QuickBooks and Xero ledgers.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <button onClick={() => onUpgrade('Starter', '29')} className="group flex items-center justify-center space-x-2 bg-white text-slate-900 px-8 py-4 rounded-full text-lg font-bold hover:bg-red-50 transition-all shadow-xl">
               <span>Start 7-Day Trial</span>
@@ -106,7 +70,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgr
                 <h2 className="text-3xl font-bold text-slate-900">Professional Protection Pricing</h2>
                 <p className="text-slate-500 mt-4">Transparent security for businesses of all sizes.</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
                     <h3 className="text-lg font-semibold text-slate-900">Starter</h3>
@@ -149,10 +113,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgr
       <footer className="bg-slate-900 border-t border-slate-800 py-12 text-slate-400">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
               <div><Logo variant="light" className="scale-75 origin-left" /><p className="text-xs mt-2 opacity-60">&copy; 2026 Dat-assist Kft. All rights reserved.</p></div>
-              <div className="flex flex-wrap justify-center space-x-8 text-sm font-medium mt-4 md:mt-0">
-                  <button onClick={() => setActiveLegalView('terms')} className="hover:text-white transition-colors">Terms of Service</button>
-                  <button onClick={() => setActiveLegalView('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
-                  <button onClick={() => setActiveLegalView('refund')} className="hover:text-white transition-colors">Refund Policy</button>
+              <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm font-medium mt-4 md:mt-0">
+                  <button onClick={() => onOpenLegal('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+                  <button onClick={() => onOpenLegal('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+                  <button onClick={() => onOpenLegal('refund')} className="hover:text-white transition-colors">Refund Policy</button>
                   <button onClick={() => setShowHelp(true)} className="hover:text-white transition-colors">Support</button>
               </div>
           </div>
@@ -162,7 +126,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onUpgr
   );
 };
 
-// Simplified component for legal content to be used in both modal and pages
+// Shared legal content component — also used by LegalModal
 export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' }> = ({ activeTab }) => {
     const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -181,7 +145,7 @@ export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' 
                         </p>
                     </section>
                     <section className="space-y-4">
-                        <h4 className="text-xl font-bold text-slate-900 flex items-center"><Scale size={24} className="mr-2 text-red-600"/> 2. Service Description & Responsibility</h4>
+                        <h4 className="text-xl font-bold text-slate-900 flex items-center"><Scale size={24} className="mr-2 text-red-600"/> 2. Service Description &amp; Responsibility</h4>
                         <p className="text-slate-600 leading-relaxed text-lg">
                             Fraud Radar provides automated detection and insights based on journal entries and ledger data. While our AI Radar is highly accurate, users are responsible for final forensic investigation and verification of all flagged anomalies before taking disciplinary or legal action.
                         </p>
@@ -192,11 +156,11 @@ export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' 
             return (
                 <div className="space-y-8 animate-in fade-in duration-500">
                     <div className="border-b border-slate-100 pb-4">
-                        <h3 className="text-4xl font-black text-slate-900 mb-2">Privacy & GDPR</h3>
+                        <h3 className="text-4xl font-black text-slate-900 mb-2">Privacy &amp; GDPR</h3>
                         <p className="text-sm font-bold text-red-600 uppercase tracking-widest">Last updated: {today}</p>
                     </div>
                     <section className="space-y-4">
-                        <h4 className="text-xl font-bold text-slate-900 flex items-center"><Shield size={24} className="mr-2 text-red-600"/> Data Protection & Security</h4>
+                        <h4 className="text-xl font-bold text-slate-900 flex items-center"><Shield size={24} className="mr-2 text-red-600"/> Data Protection &amp; Security</h4>
                         <p className="text-slate-600 leading-relaxed text-lg">
                             We are committed to protecting your financial data under strict GDPR regulations. Fraud Radar utilizes 256-bit AES encryption for all data at rest and TLS 1.3 for data in transit. <strong>We do not store your QuickBooks or Xero passwords.</strong> All processing occurs within secure, audited EU-based data centers.
                         </p>
@@ -213,15 +177,15 @@ export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' 
             return (
                 <div className="space-y-12 animate-in fade-in duration-500">
                     <div className="border-b border-slate-100 pb-4">
-                        <h3 className="text-4xl font-black text-slate-900 mb-2">Refund & Billing Policy</h3>
+                        <h3 className="text-4xl font-black text-slate-900 mb-2">Refund &amp; Billing Policy</h3>
                         <p className="text-sm font-bold text-red-600 uppercase tracking-widest">Last updated: {today}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <section className="space-y-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h4 className="text-xl font-bold text-slate-900 flex items-center"><CreditCard size={24} className="mr-2 text-red-600"/> Billing & Merchant of Record</h4>
+                            <h4 className="text-xl font-bold text-slate-900 flex items-center"><CreditCard size={24} className="mr-2 text-red-600"/> Billing &amp; Merchant of Record</h4>
                             <p className="text-slate-600 leading-relaxed text-sm">
-                                Our order process is conducted by our online reseller <strong>Paddle.com</strong>. Paddle is the <strong>Merchant of Record</strong> for all our orders. Paddle handles all payment processing, tax collection (VAT/GST), and initial customer service inquiries regarding billing. Secure transactions are guaranteed via the Paddle.com Marketplace.
+                                Our order process is conducted by our online reseller <strong>Paddle.com</strong>. Paddle is the <strong>Merchant of Record</strong> for all our orders. Paddle handles all payment processing, tax collection (VAT/GST), and initial customer service inquiries regarding billing.
                             </p>
                         </section>
 
@@ -236,7 +200,7 @@ export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' 
                     <section className="space-y-6">
                         <h4 className="text-2xl font-bold text-slate-900 border-l-4 border-red-600 pl-4">Refund Eligibility</h4>
                         <p className="text-slate-600 leading-relaxed text-lg">
-                            As a software-as-a-service (SaaS) provider, we generally do not offer refunds once a billing cycle has begun, as access is immediate. However, we honor the following:
+                            As a SaaS provider, we generally do not offer refunds once a billing cycle has begun. However, we honor the following:
                         </p>
                         <ul className="space-y-4 ml-4">
                             <li className="flex items-start gap-4">
@@ -254,7 +218,7 @@ export const LegalContent: React.FC<{ activeTab: 'terms' | 'privacy' | 'refund' 
                                 </div>
                                 <div>
                                     <strong className="text-slate-800 block">EU Statutory Rights</strong>
-                                    <span className="text-slate-600 text-sm">Consumers within the European Union have a 14-day "cooling off" period, provided the service has not been fully performed (e.g., if you haven't initiated a full ledger scan).</span>
+                                    <span className="text-slate-600 text-sm">Consumers within the European Union have a 14-day "cooling off" period, provided the service has not been fully performed.</span>
                                 </div>
                             </li>
                         </ul>
