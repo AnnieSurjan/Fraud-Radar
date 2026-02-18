@@ -32,6 +32,7 @@ export interface Transaction {
   status: 'pending' | 'reviewed' | 'flagged' | 'cleared';
   recordedBy?: string;
   timestamp?: string; 
+  sourceUrl?: string; // Deep link to QB or Xero
 }
 
 export interface AnomalyGroup {
@@ -42,6 +43,7 @@ export interface AnomalyGroup {
   riskLevel: RiskLevel;
   transactions: Transaction[];
   category: 'Splitting' | 'Unusual Amount' | 'New Vendor' | 'Time Anomaly' | 'Duplicate';
+  investigationStatus?: 'open' | 'investigating' | 'dismissed' | 'resolved';
 }
 
 export interface ScanResult {
