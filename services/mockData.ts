@@ -3,18 +3,42 @@ import { Transaction, TransactionType, AnomalyGroup, RiskLevel, ScanResult } fro
 
 export const MOCK_TRANSACTIONS: Transaction[] = [
   // Splitting pattern
-  { id: 'TXN-S1', date: '2023-11-20', amount: 450.00, currency: 'USD', type: TransactionType.PURCHASE, entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:00', status: 'pending' },
-  { id: 'TXN-S2', date: '2023-11-20', amount: 480.00, currency: 'USD', type: TransactionType.PURCHASE, entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:05', status: 'pending' },
-  { id: 'TXN-S3', date: '2023-11-20', amount: 420.00, currency: 'USD', type: TransactionType.PURCHASE, entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:10', status: 'pending' },
+  { 
+    id: 'TXN-S1', date: '2023-11-20', amount: 450.00, currency: 'USD', type: TransactionType.PURCHASE, 
+    entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:00', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/expense?txnId=10234'
+  },
+  { 
+    id: 'TXN-S2', date: '2023-11-20', amount: 480.00, currency: 'USD', type: TransactionType.PURCHASE, 
+    entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:05', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/expense?txnId=10235'
+  },
+  { 
+    id: 'TXN-S3', date: '2023-11-20', amount: 420.00, currency: 'USD', type: TransactionType.PURCHASE, 
+    entityName: 'Office Max', account: 'Supplies', recordedBy: 'John Smith', timestamp: '2023-11-20 10:10', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/expense?txnId=10236'
+  },
   
   // Unusual time
-  { id: 'TXN-T1', date: '2023-11-19', amount: 2500.00, currency: 'USD', type: TransactionType.BILL, entityName: 'IT Services Ltd', account: 'Professional Fees', recordedBy: 'Admin', timestamp: '2023-11-19 23:45', status: 'pending' },
+  { 
+    id: 'TXN-T1', date: '2023-11-19', amount: 2500.00, currency: 'USD', type: TransactionType.BILL, 
+    entityName: 'IT Services Ltd', account: 'Professional Fees', recordedBy: 'Admin', timestamp: '2023-11-19 23:45', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/bill?txnId=9928'
+  },
 
   // New vendor, round amount
-  { id: 'TXN-N1', date: '2023-11-15', amount: 5000.00, currency: 'USD', type: TransactionType.BILL, entityName: 'New Consulting Group', account: 'Legal', recordedBy: 'Anna White', timestamp: '2023-11-15 14:00', status: 'pending' },
+  { 
+    id: 'TXN-N1', date: '2023-11-15', amount: 5000.00, currency: 'USD', type: TransactionType.BILL, 
+    entityName: 'New Consulting Group', account: 'Legal', recordedBy: 'Anna White', timestamp: '2023-11-15 14:00', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/bill?txnId=8841'
+  },
 
   // Normal transaction
-  { id: 'TXN-OK1', date: '2023-11-10', amount: 120.00, currency: 'USD', type: TransactionType.PURCHASE, entityName: 'Starbucks', account: 'Travel', recordedBy: 'John Smith', timestamp: '2023-11-10 08:30', status: 'pending' },
+  { 
+    id: 'TXN-OK1', date: '2023-11-10', amount: 120.00, currency: 'USD', type: TransactionType.PURCHASE, 
+    entityName: 'Starbucks', account: 'Travel', recordedBy: 'John Smith', timestamp: '2023-11-10 08:30', status: 'pending',
+    sourceUrl: 'https://app.qbo.intuit.com/app/expense?txnId=7712'
+  },
 ];
 
 export const MOCK_SCAN_HISTORY: ScanResult[] = [
@@ -43,7 +67,8 @@ export const detectAnomalies = (transactions: Transaction[]): AnomalyGroup[] => 
         riskScore: 85,
         riskLevel: RiskLevel.HIGH,
         transactions: group,
-        category: 'Splitting'
+        category: 'Splitting',
+        investigationStatus: 'open'
       });
     }
   });
@@ -61,7 +86,8 @@ export const detectAnomalies = (transactions: Transaction[]): AnomalyGroup[] => 
             riskScore: 60,
             riskLevel: RiskLevel.MEDIUM,
             transactions: [t],
-            category: 'Time Anomaly'
+            category: 'Time Anomaly',
+            investigationStatus: 'open'
           });
       }
     }
@@ -77,7 +103,8 @@ export const detectAnomalies = (transactions: Transaction[]): AnomalyGroup[] => 
             riskScore: 90,
             riskLevel: RiskLevel.CRITICAL,
             transactions: [t],
-            category: 'Unusual Amount'
+            category: 'Unusual Amount',
+            investigationStatus: 'open'
           });
       }
   });
