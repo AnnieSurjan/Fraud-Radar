@@ -1,9 +1,9 @@
 services:
   - type: web
     name: fraud-radar
-    runtime: static
+    env: node
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    startCommand: node server.js
     envVars:
       - key: GEMINI_API_KEY
         sync: false
